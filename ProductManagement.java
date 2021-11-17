@@ -40,7 +40,7 @@ public class ProductManagement {
         addButton.setBounds(90, 230, 100, 30);
         addButton.setBackground(Color.BLUE);
         addButton.setForeground(Color.WHITE);
-        
+
         JButton updateButton = new JButton("Update");
         updateButton.setBounds(210, 230, 100, 30);
         updateButton.setBackground(Color.BLUE);
@@ -50,14 +50,14 @@ public class ProductManagement {
         deleteButton.setBounds(90, 270, 100, 30);
         deleteButton.setBackground(Color.BLUE);
         deleteButton.setForeground(Color.WHITE);
-        
+
         JButton searchButton = new JButton("Search");
         searchButton.setBounds(210, 270, 100, 30);
         searchButton.setBackground(Color.BLUE);
         searchButton.setForeground(Color.WHITE);
 
         JLabel copyright = new JLabel("Copyright @Java X");
-        copyright.setBounds(130,310, 300, 30);
+        copyright.setBounds(130, 310, 300, 30);
         copyright.setFont(new Font("Serif", Font.ITALIC, 16));
         copyright.setForeground(Color.BLUE);
 
@@ -77,7 +77,8 @@ public class ProductManagement {
         frame.add(searchButton);
         frame.add(copyright);
 
-        HandleEvent handleEvent = new HandleEvent(productIDField, productNameField, productPriceField, productQtyField, addButton, updateButton, deleteButton, searchButton);
+        HandleEvent handleEvent = new HandleEvent(productIDField, productNameField, productPriceField, productQtyField,
+                addButton, updateButton, deleteButton, searchButton);
         addButton.addActionListener(handleEvent);
         updateButton.addActionListener(handleEvent);
         deleteButton.addActionListener(handleEvent);
@@ -88,6 +89,7 @@ public class ProductManagement {
         frame.setVisible(true);
     }
 }
+
 class HandleEvent implements ActionListener {
 
     JTextField id, name, price, quantity;
@@ -95,7 +97,8 @@ class HandleEvent implements ActionListener {
     public static Connection con;
     public static PreparedStatement statement;
 
-    public HandleEvent(JTextField id, JTextField name, JTextField price, JTextField quantity, JButton add, JButton update, JButton delete, JButton search){
+    public HandleEvent(JTextField id, JTextField name, JTextField price, JTextField quantity, JButton add,
+            JButton update, JButton delete, JButton search) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -108,15 +111,16 @@ class HandleEvent implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == add){
+        if (e.getSource() == add) {
             connect();
             String productID = id.getText();
             String productName = name.getText();
             String productPrice = price.getText();
             String productQty = quantity.getText();
 
-            try{
-                statement = con.prepareStatement("insert into products(productID, productName, productPrice, productQty)values(?,?,?, ?)");
+            try {
+                statement = con.prepareStatement(
+                        "insert into products(productID, productName, productPrice, productQty)values(?,?,?, ?)");
                 int proID = Integer.parseInt(productID);
                 statement.setInt(1, proID);
                 statement.setString(2, productName);
@@ -126,26 +130,30 @@ class HandleEvent implements ActionListener {
                 statement.setInt(4, proQuantity);
                 statement.executeUpdate();
 
-                JOptionPane.showMessageDialog(null, "Successfully Added", "Record Added", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Successfully Added", "Record Added",
+                        JOptionPane.INFORMATION_MESSAGE);
 
                 id.setText(" ");
                 name.setText(" ");
                 price.setText(" ");
                 quantity.setText(" ");
 
+                con.close();
+
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
-        if(e.getSource() == update){
+        if (e.getSource() == update) {
             connect();
             String productID = id.getText();
             String productName = name.getText();
             String productPrice = price.getText();
             String productQty = quantity.getText();
 
-            try{
-                statement = con.prepareStatement("update products set productID = ?, productName = ?, productPrice = ?, productQty = ? where productID = ?");
+            try {
+                statement = con.prepareStatement(
+                        "update products set productID = ?, productName = ?, productPrice = ?, productQty = ? where productID = ?");
                 int proID = Integer.parseInt(productID);
                 statement.setInt(1, proID);
                 statement.setString(2, productName);
@@ -156,62 +164,72 @@ class HandleEvent implements ActionListener {
                 statement.setInt(5, proID);
                 statement.executeUpdate();
 
-                JOptionPane.showMessageDialog(null, "Successfully Updated", "Record Updated", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Successfully Updated", "Record Updated",
+                        JOptionPane.INFORMATION_MESSAGE);
 
                 id.setText(" ");
                 name.setText(" ");
                 price.setText(" ");
                 quantity.setText(" ");
 
+                con.close();
+
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
-        if(e.getSource() == delete){
+        if (e.getSource() == delete) {
             connect();
             String productID = id.getText();
 
-            try{
+            try {
                 statement = con.prepareStatement("delete from products where productID = ?");
                 int proID = Integer.parseInt(productID);
                 statement.setInt(1, proID);
                 statement.executeUpdate();
 
-                JOptionPane.showMessageDialog(null, "Successfully Deleted", "Record Deleted", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Successfully Deleted", "Record Deleted",
+                        JOptionPane.INFORMATION_MESSAGE);
 
                 id.setText(" ");
                 name.setText(" ");
                 price.setText(" ");
                 quantity.setText(" ");
 
+                con.close();
+
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
-        if(e.getSource() == search){
+        if (e.getSource() == search) {
             connect();
             String productID = id.getText();
 
-            try{
-                statement = con.prepareStatement("select productName, productPrice, productQty from products where productID = ?");
+            try {
+                statement = con.prepareStatement(
+                        "select productName, productPrice, productQty from products where productID = ?");
                 int proID = Integer.parseInt(productID);
                 statement.setInt(1, proID);
                 ResultSet rs = statement.executeQuery();
 
-                if(rs.next() == true){
+                if (rs.next() == true) {
                     String proName = rs.getString(1);
                     String proPrice = rs.getString(2);
                     String proQty = rs.getString(3);
 
                     name.setText(proName);
                     price.setText(proPrice);
-                    quantity.setText(proQty);  
+                    quantity.setText(proQty);
                 } else {
                     name.setText(" ");
                     price.setText(" ");
                     quantity.setText(" ");
                     JOptionPane.showMessageDialog(null, "Invalid Product ID", "Error", JOptionPane.ERROR_MESSAGE);
                 }
+
+                con.close();
+
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -221,10 +239,10 @@ class HandleEvent implements ActionListener {
     public void connect() {
         String URL = "jdbc:mysql://localhost:3306/ProductData";
         String username = "root";
-        String password = "keyur";
-        try{
-            Class.forName("com.mysql.cj.jdbc.Driver"); 
-            con = DriverManager.getConnection(URL, username, password); 
+        String password = "YOUR_PASSWORD";
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection(URL, username, password);
             System.out.println("Connected to Database...");
         } catch (SQLException e) {
             e.printStackTrace();
